@@ -9,11 +9,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.example.costs.model.CostDB;
 import com.example.costs.model.DatabaseHelper;
 import com.example.costs.utils.MyDividerItemDecoration;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,7 @@ public class CostsActivity extends AppCompatActivity {
 
     private List<CostDB> costsList = new ArrayList<>();
     private RecyclerView recyclerView;
+    String date = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,13 +36,19 @@ public class CostsActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        String date = intent.getStringExtra("date");
+        date = intent.getStringExtra("date");
         String price = intent.getStringExtra("price");
 
         setRecyclerView(date);
 
         TextView totalPrice = findViewById(R.id.totalDayPrice);
         totalPrice.setText(date + "  " + price+"€");
+
+        FloatingActionButton addNew = findViewById(R.id.addNewCosts);
+        addNew.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {createNewCost();}
+        });
 
     }
 
@@ -57,6 +66,13 @@ public class CostsActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new MyDividerItemDecoration(this, LinearLayoutManager.VERTICAL, 16));
         recyclerView.setAdapter(mAdapter);
 
+    }
+
+    private void createNewCost(){
+        Intent myIntent = new Intent(CostsActivity.this, AddActivity.class);
+        myIntent.putExtra("date", date);
+
+        CostsActivity.this.startActivity(myIntent);
     }
 
     @Override

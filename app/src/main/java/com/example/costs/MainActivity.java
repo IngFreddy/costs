@@ -14,7 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -45,12 +48,7 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Intent myIntent = new Intent(MainActivity.this, AddActivity.class);
-                myIntent.putExtra("date", "05/09/2019");
-
-                MainActivity.this.startActivity(myIntent);
-            }
+            public void onClick(View view) {createNewCost();}
         });
 
     }
@@ -59,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
      * READ informations from database
      * SETUP RecyclerView and FILL
      */
-    private void setRecyclerView(){
+    public void setRecyclerView(){
         recyclerView = findViewById(R.id.recyclerViewDates);
 
         DatabaseHelper db = new DatabaseHelper(this);
@@ -89,6 +87,17 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void createNewCost(){
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = new Date();
+        String today = dateFormat.format(date);
+
+        Intent myIntent = new Intent(MainActivity.this, AddActivity.class);
+        myIntent.putExtra("date", today);
+
+        MainActivity.this.startActivity(myIntent);
+    }
+
     /**
      * SELECTED day for detail, show costs_activity
      * @param position selected row
@@ -116,6 +125,14 @@ public class MainActivity extends AppCompatActivity {
 
         if (id == R.id.action_settings) {
             return true;
+        }
+
+        if (id == R.id.action_add) {
+            createNewCost();
+        }
+
+        if (id == R.id.action_refresh) {
+            setRecyclerView();
         }
 
         return super.onOptionsItemSelected(item);
