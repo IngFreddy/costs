@@ -13,10 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="30dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="80dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="35dp"
         android:orientation="horizontal"
         android:weightSum="100"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
@@ -43,12 +39,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="30dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="185dp"
         android:orientation="horizontal"
         android:weightSum="100"
-        app:layout_constraintBottom_toTopOf="@+id/imageButton"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -74,12 +67,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="30dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="185dp"
         android:orientation="horizontal"
         android:weightSum="100"
-        app:layout_constraintBottom_toTopOf="@+id/imageButton"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -99,16 +89,43 @@
             android:inputType="textPersonName" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="30dp"
+        android:orientation="horizontal"
+        android:weightSum="100"
+        app:layout_constraintBottom_toTopOf="@+id/imgBtnRecipe"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="20"
+            android:text="@string/add_date" />
+
+        <EditText
+            android:id="@+id/editTextAddDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="70"
+            android:inputType="date" />
+    </LinearLayout>
+
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/imgBtnRecipe"
         android:layout_width="173dp"
         android:layout_height="0dp"
         android:layout_marginStart="100dp"
-        android:layout_marginBottom="110dp"
+        android:layout_marginBottom="100dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
         app:srcCompat="@drawable/ic_add_button_white" />
 
 

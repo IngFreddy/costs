@@ -7,4 +7,5 @@
     <string name="add_name">Name</string>
     <string name="add_description">Description</string>
     <string name="add_price">Price</string>
+    <string name="add_date">Date</string>
 </resources>
