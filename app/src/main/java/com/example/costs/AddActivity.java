@@ -30,7 +30,6 @@ public class AddActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         Intent intent = getIntent();
-
         String date = intent.getStringExtra("date");
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -60,14 +59,15 @@ public class AddActivity extends AppCompatActivity {
         String desc = addDescEdt.getText().toString();
         float price = Float.valueOf(addPriceEdt.getText().toString());
 
-        Snackbar.make(view, name+date+desc+price, Snackbar.LENGTH_LONG)
+        Snackbar.make(view, "SAVED:" + name+desc+price+date, Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
 
         DatabaseHelper db = new DatabaseHelper(this);
-        db.insertCost(name, price, date);
+        db.insertCost(name, desc, price, date);
 
 
-        //MainActivity.setRecyclerView();
+        Intent intent = getIntent();
+        setResult(RESULT_OK,intent);
 
         finish();
     }

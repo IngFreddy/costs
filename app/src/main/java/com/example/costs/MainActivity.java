@@ -43,7 +43,14 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        setRecyclerView();
+        try {
+            setRecyclerView();
+        }
+        catch (Exception e){
+            View view = findViewById(android.R.id.content);
+            Snackbar.make(view, "Error in reading database!", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -61,9 +68,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerViewDates);
 
         DatabaseHelper db = new DatabaseHelper(this);
-
         daysList = db.getAllDates();
-        CostsAdapter mAdapter = new CostsAdapter(this, daysList);
+
+        DaysAdapter mAdapter = new DaysAdapter(this, daysList);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
@@ -85,6 +92,11 @@ public class MainActivity extends AppCompatActivity {
             }
         }));
 
+        float totalPrice = 0.0f;
+        for(CostDB day: daysList){
+            totalPrice += day.getPrice();
+        }
+
     }
 
     private void createNewCost(){
@@ -95,7 +107,20 @@ public class MainActivity extends AppCompatActivity {
         Intent myIntent = new Intent(MainActivity.this, AddActivity.class);
         myIntent.putExtra("date", today);
 
-        MainActivity.this.startActivity(myIntent);
+        MainActivity.this.startActivityForResult(myIntent, RESULT_OK );
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch(resultCode){
+            case RESULT_OK:
+                setRecyclerView();
+                break;
+            case RESULT_CANCELED:
+                System.out.println("ERROR creating Cost");
+                break;
+        }
     }
 
     /**
@@ -107,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent myIntent = new Intent(MainActivity.this, CostsActivity.class);
         myIntent.putExtra("date", clicked.getTimestamp());
-        myIntent.putExtra("price", decimalFormat.format(clicked.getprice()));
+        myIntent.putExtra("price", decimalFormat.format(clicked.getPrice()));
 
         MainActivity.this.startActivity(myIntent);
     }

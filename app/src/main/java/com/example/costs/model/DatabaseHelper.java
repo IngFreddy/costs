@@ -13,7 +13,7 @@ import com.example.costs.model.CostDB;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "notes_db";
 
     public DatabaseHelper(Context context) {
@@ -31,11 +31,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public long insertCost(String name, float price, String date) {
+    public long insertCost(String name, String description, float price, String date) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(CostDB.COLUMN_NAME, name);
+        values.put(CostDB.COLUMN_DESCRIPTION, description);
         values.put(CostDB.COLUMN_PRICE, price);
         values.put(CostDB.COLUMN_TIMESTAMP, date);
 
@@ -46,38 +47,44 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return id;
     }
 
+    public long insertCost(CostDB cost) {
+        SQLiteDatabase db = this.getWritableDatabase();
 
-    public CostDB getNote(long id) {
-        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(CostDB.COLUMN_NAME, cost.getName());
+        values.put(CostDB.COLUMN_DESCRIPTION, cost.getDescription());
+        values.put(CostDB.COLUMN_PRICE, cost.getPrice());
+        values.put(CostDB.COLUMN_TIMESTAMP, cost.getTimestamp());
 
-        Cursor cursor = db.query(CostDB.TABLE_NAME,
-                new String[]{CostDB.COLUMN_ID, CostDB.COLUMN_NAME, CostDB.COLUMN_PRICE, CostDB.COLUMN_TIMESTAMP},
-                CostDB.COLUMN_ID + "=?",
-                new String[]{String.valueOf(id)}, null, null, null, null);
+        long id = db.insert(CostDB.TABLE_NAME, null, values);
 
-        if (cursor != null)
-            cursor.moveToFirst();
+        db.close();
 
-        // prepare note object
-        CostDB note = new CostDB(
-                cursor.getInt(cursor.getColumnIndex(CostDB.COLUMN_ID)),
-                cursor.getString(cursor.getColumnIndex(CostDB.COLUMN_NAME)),
-                cursor.getFloat(cursor.getColumnIndex(CostDB.COLUMN_PRICE)),
-                cursor.getString(cursor.getColumnIndex(CostDB.COLUMN_TIMESTAMP)));
+        return id;
+    }
 
-        // close the db connection
-        cursor.close();
+    public long updateCost(CostDB cost) {
+        SQLiteDatabase db = this.getWritableDatabase();
 
-        return note;
+        ContentValues values = new ContentValues();
+        values.put(CostDB.COLUMN_NAME, cost.getName());
+        values.put(CostDB.COLUMN_DESCRIPTION, cost.getDescription());
+        values.put(CostDB.COLUMN_PRICE, cost.getPrice());
+        values.put(CostDB.COLUMN_TIMESTAMP, cost.getTimestamp());
+
+        long id = db.insert(CostDB.TABLE_NAME, null, values);
+
+        db.close();
+
+        return id;
     }
 
 
     public List<CostDB> getAllDates() {
-        List<CostDB> notes = new ArrayList<>();
+        List<CostDB> costs = new ArrayList<>();
 
-        String selectQuery = "SELECT  "+
-                    CostDB.COLUMN_ID +"," + CostDB.COLUMN_NAME + ",SUM(" + CostDB.COLUMN_PRICE + ")," + CostDB.COLUMN_TIMESTAMP
-                    +" FROM " + CostDB.TABLE_NAME + " GROUP BY " + CostDB.COLUMN_TIMESTAMP + ";";
+        String selectQuery = "SELECT SUM(" + CostDB.COLUMN_PRICE + ")," + CostDB.COLUMN_TIMESTAMP +
+                    " FROM " + CostDB.TABLE_NAME + " GROUP BY " + CostDB.COLUMN_TIMESTAMP + ";";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -86,12 +93,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 CostDB note = new CostDB(
-                        cursor.getInt(cursor.getColumnIndex(CostDB.COLUMN_ID)),
-                        cursor.getString(cursor.getColumnIndex(CostDB.COLUMN_NAME)),
+                        0,
+                        "", "",
                         cursor.getFloat(cursor.getColumnIndex("SUM(price)")),
                         cursor.getString(cursor.getColumnIndex(CostDB.COLUMN_TIMESTAMP)));
 
-                notes.add(note);
+                costs.add(note);
             } while (cursor.moveToNext());
         }
 
@@ -99,11 +106,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
 
         // return notes list
-        return notes;
+        return costs;
     }
 
     public List<CostDB> getCostsForDate(String date) {
-        List<CostDB> notes = new ArrayList<>();
+        List<CostDB> costs = new ArrayList<>();
 
         String selectQuery = "SELECT  * FROM " + CostDB.TABLE_NAME
                 + " WHERE " + CostDB.COLUMN_TIMESTAMP + "=\"" + date
@@ -118,10 +125,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 CostDB note = new CostDB(
                         cursor.getInt(cursor.getColumnIndex(CostDB.COLUMN_ID)),
                         cursor.getString(cursor.getColumnIndex(CostDB.COLUMN_NAME)),
+                        cursor.getString(cursor.getColumnIndex(CostDB.COLUMN_DESCRIPTION)),
                         cursor.getFloat(cursor.getColumnIndex(CostDB.COLUMN_PRICE)),
                         cursor.getString(cursor.getColumnIndex(CostDB.COLUMN_TIMESTAMP)));
 
-                notes.add(note);
+                costs.add(note);
             } while (cursor.moveToNext());
         }
 
@@ -129,10 +137,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
 
         // return notes list
-        return notes;
+        return costs;
     }
 
-    public List<CostDB> getAllNotes() {
+    public List<CostDB> getAllCosts() {
         List<CostDB> notes = new ArrayList<>();
 
         // Select All Query
@@ -148,6 +156,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 CostDB note = new CostDB(
                         cursor.getInt(cursor.getColumnIndex(CostDB.COLUMN_ID)),
                         cursor.getString(cursor.getColumnIndex(CostDB.COLUMN_NAME)),
+                        cursor.getString(cursor.getColumnIndex(CostDB.COLUMN_DESCRIPTION)),
                         cursor.getFloat(cursor.getColumnIndex(CostDB.COLUMN_PRICE)),
                         cursor.getString(cursor.getColumnIndex(CostDB.COLUMN_TIMESTAMP)));
 
