@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.costs.R;
+import com.example.costs.database.CategoryDB;
 import com.example.costs.database.CostDB;
 import com.example.costs.database.DatabaseHelper;
+import com.example.costs.database.model.Category;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -16,10 +18,16 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AddActivity extends AppCompatActivity {
+    private List<Category> categories = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +55,26 @@ public class AddActivity extends AppCompatActivity {
         ImageButton imgBtn = findViewById(R.id.imgBtnRecipe);
         //imgBtn.setOnClickListener(nnew View.on);
 
+        getCategories();
+
+    }
+
+    private void getCategories(){
+        CategoryDB db = new CategoryDB(this);
+        categories = db.getAllCategories();
+
+        Spinner addCategSpin = findViewById(R.id.spinnerChooseCategorie);
+
+        List<String> spinnerArray =  new ArrayList<String>();
+        for(Category cat: categories){
+            spinnerArray.add(cat.getName());
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                this, android.R.layout.simple_spinner_item, spinnerArray);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        addCategSpin.setAdapter(adapter);
     }
 
 
@@ -55,12 +83,13 @@ public class AddActivity extends AppCompatActivity {
         EditText addDateEdt = findViewById(R.id.editTextAddDate);
         EditText addDescEdt = findViewById(R.id.editTextAddDescription);
         EditText addPriceEdt = findViewById(R.id.editTextAddPrice);
+        Spinner addCategSpin = findViewById(R.id.spinnerChooseCategorie);
 
         String name = addNameEdt.getText().toString();
         float price = 0f;
         String date = addDateEdt.getText().toString();
         String desc = addDescEdt.getText().toString();
-
+        int cats = categories.get(addCategSpin.getSelectedItemPosition()).getId();
 
         try {
             price = Float.valueOf(addPriceEdt.getText().toString());
@@ -79,7 +108,7 @@ public class AddActivity extends AppCompatActivity {
 
         try {
             CostDB db = new CostDB(this);
-            db.insertCost(name, desc, price, date);
+            db.insertCost(name, desc, price, date, cats);
         }
         catch (Exception e){
             Snackbar.make(view, "ERROR writing in database:"+e.getMessage(), Snackbar.LENGTH_LONG)

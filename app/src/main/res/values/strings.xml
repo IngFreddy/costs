@@ -9,4 +9,8 @@
     <string name="add_price">Price</string>
     <string name="add_date">Date</string>
     <string name="action_refresh">Refresh</string>
+    <string name="action_filter">Filter</string>
+    <string name="action_categories">Categories</string>
+    <string name="add_categorie">Categorie</string>
+    <string name="title_activity_categories">Categories</string>
 </resources>

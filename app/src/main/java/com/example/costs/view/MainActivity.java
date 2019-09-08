@@ -3,7 +3,10 @@ package com.example.costs.view;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.example.costs.database.CategoryDB;
 import com.example.costs.database.CostDB;
+import com.example.costs.database.model.Category;
+import com.example.costs.view.adapters.CategoriesAdapter;
 import com.example.costs.view.adapters.DaysAdapter;
 import com.example.costs.R;
 
@@ -62,6 +65,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {createNewCost();}
         });
 
+//        CategoryDB db = new CategoryDB(this);
+//        db.insertCategory("test1", "test1", "00ffff");
+//        db.insertCategory("test2", "test2", "ff00ff");
+//        db.insertCategory("test3", "test3", "ffff00");
     }
 
     /**
@@ -165,6 +172,11 @@ public class MainActivity extends AppCompatActivity {
 
             case(R.id.action_refresh):
                 setRecyclerView();
+                break;
+
+            case(R.id.action_categories):
+                Intent myIntent = new Intent(MainActivity.this, CategoriesActivity.class);
+                MainActivity.this.startActivity(myIntent);
                 break;
 
             case(R.id.action_settings):

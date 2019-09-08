@@ -18,13 +18,14 @@ public class CostDB {
         this.db = new DatabaseHelper(context);
     }
 
-    public long insertCost(String name, String description, float price, String date) {
+    public long insertCost(String name, String description, float price, String date, int categoryID) {
 
         ContentValues values = new ContentValues();
         values.put(Cost.COLUMN_NAME, name);
         values.put(Cost.COLUMN_DESCRIPTION, description);
         values.put(Cost.COLUMN_PRICE, price);
         values.put(Cost.COLUMN_TIMESTAMP, date);
+        values.put(Cost.COLUMN_CATEGORYID, categoryID);
 
         return db.insertDB(Cost.TABLE_NAME, values);
 
@@ -37,6 +38,7 @@ public class CostDB {
         values.put(Cost.COLUMN_DESCRIPTION, cost.getDescription());
         values.put(Cost.COLUMN_PRICE, cost.getPrice());
         values.put(Cost.COLUMN_TIMESTAMP, cost.getTimestamp());
+        values.put(Cost.COLUMN_CATEGORYID, cost.getCategoryID());
 
         return db.insertDB(Cost.TABLE_NAME, values);
 
@@ -49,6 +51,7 @@ public class CostDB {
         values.put(Cost.COLUMN_DESCRIPTION, cost.getDescription());
         values.put(Cost.COLUMN_PRICE, cost.getPrice());
         values.put(Cost.COLUMN_TIMESTAMP, cost.getTimestamp());
+        values.put(Cost.COLUMN_CATEGORYID, cost.getCategoryID());
 
         //return mDb.update(TABLENAME, contentValues,"ID=?",new String[] {id});
         //long id = db.update(Cost.TABLE_NAME, values, "ID=?", new String[] {cost.getId() +""});
@@ -81,7 +84,7 @@ public class CostDB {
                         0,
                         "", "",
                         cursor.getFloat(cursor.getColumnIndex("SUM(price)")),
-                        cursor.getString(cursor.getColumnIndex(Cost.COLUMN_TIMESTAMP)));
+                        cursor.getString(cursor.getColumnIndex(Cost.COLUMN_TIMESTAMP)),0);
 
                 costs.add(note);
             } while (cursor.moveToNext());
@@ -109,7 +112,8 @@ public class CostDB {
                         cursor.getString(cursor.getColumnIndex(Cost.COLUMN_NAME)),
                         cursor.getString(cursor.getColumnIndex(Cost.COLUMN_DESCRIPTION)),
                         cursor.getFloat(cursor.getColumnIndex(Cost.COLUMN_PRICE)),
-                        cursor.getString(cursor.getColumnIndex(Cost.COLUMN_TIMESTAMP)));
+                        cursor.getString(cursor.getColumnIndex(Cost.COLUMN_TIMESTAMP)),
+                        cursor.getInt(cursor.getColumnIndex(Cost.COLUMN_CATEGORYID)));
 
                 costs.add(note);
             } while (cursor.moveToNext());
@@ -135,7 +139,8 @@ public class CostDB {
                         cursor.getString(cursor.getColumnIndex(Cost.COLUMN_NAME)),
                         cursor.getString(cursor.getColumnIndex(Cost.COLUMN_DESCRIPTION)),
                         cursor.getFloat(cursor.getColumnIndex(Cost.COLUMN_PRICE)),
-                        cursor.getString(cursor.getColumnIndex(Cost.COLUMN_TIMESTAMP)));
+                        cursor.getString(cursor.getColumnIndex(Cost.COLUMN_TIMESTAMP)),
+                        cursor.getInt(cursor.getColumnIndex(Cost.COLUMN_CATEGORYID)));
 
                 notes.add(note);
             } while (cursor.moveToNext());

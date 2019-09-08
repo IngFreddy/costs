@@ -2,6 +2,7 @@ package com.example.costs.view.adapters;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,58 +18,59 @@ import java.util.Date;
 import java.util.List;
 
 import com.example.costs.R;
-import com.example.costs.database.model.Cost;
+import com.example.costs.database.model.Category;
 
 
-public class CostsAdapter extends RecyclerView.Adapter<CostsAdapter.MyViewHolder> {
+public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.MyViewHolder> {
     private Context context;
-    private List<Cost> costsList;
+    private List<Category> catsList;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView note;
+        public TextView name;
         public TextView dot;
-        public TextView timestamp;
+        public TextView description;
         public TextView price;
 
         public MyViewHolder(View view) {
             super(view);
-            note = view.findViewById(R.id.note);
-            dot = view.findViewById(R.id.dot);
-            timestamp = view.findViewById(R.id.timestamp);
-            price = view.findViewById(R.id.price);
+            name = view.findViewById(R.id.nameCat);
+            dot = view.findViewById(R.id.dotCat);
+            description = view.findViewById(R.id.descriptionCat);
+            price = view.findViewById(R.id.priceCat);
         }
     }
 
 
-    public CostsAdapter(Context context, List<Cost> costsList) {
+    public CategoriesAdapter(Context context, List<Category> catsList) {
         this.context = context;
-        this.costsList = costsList;
+        this.catsList = catsList;
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.costs_list_row, parent, false);
+                .inflate(R.layout.cat_list_row, parent, false);
 
         return new MyViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        //DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
-        Cost note = costsList.get(position);
+        Category cat = catsList.get(position);
 
         holder.dot.setText(Html.fromHtml("&#8226;"));
+        holder.dot.setTextColor(Color.parseColor("#"+cat.getColour()));
 
-        holder.note.setText(note.getName());
-        holder.timestamp.setText(note.getTimestamp());
-        holder.price.setText(decimalFormat.format(note.getPrice()) + "€");
+        holder.name.setText(cat.getName());
+        holder.description.setText(cat.getDescription());
+        //holder.price.setText(decimalFormat.format(note.getPrice()) + "€");
     }
 
     @Override
     public int getItemCount() {
-        return costsList.size();
+        return catsList.size();
     }
 
 }
