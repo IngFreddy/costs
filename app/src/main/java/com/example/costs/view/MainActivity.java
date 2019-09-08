@@ -1,9 +1,12 @@
-package com.example.costs;
+package com.example.costs.view;
 
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.example.costs.model.DatabaseHelper;
+import com.example.costs.database.CostDB;
+import com.example.costs.view.adapters.DaysAdapter;
+import com.example.costs.R;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -21,18 +24,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.costs.utils.*;
-import com.example.costs.model.CostDB;
+import com.example.costs.database.model.Cost;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private List<CostDB> daysList = new ArrayList<>();
+    private List<Cost> daysList = new ArrayList<>();
     private DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
     @Override
@@ -48,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         }
         catch (Exception e){
             View view = findViewById(android.R.id.content);
-            Snackbar.make(view, "Error in reading database!", Snackbar.LENGTH_LONG)
+            Snackbar.make(view, "Error in reading database! " + e.getMessage(), Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         }
 
@@ -67,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     public void setRecyclerView(){
         recyclerView = findViewById(R.id.recyclerViewDates);
 
-        DatabaseHelper db = new DatabaseHelper(this);
+        CostDB db = new CostDB(this);
         daysList = db.getAllDates();
 
         DaysAdapter mAdapter = new DaysAdapter(this, daysList);
@@ -86,14 +90,14 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onLongClick(View view, int position) {
-                CostDB clicked = daysList.get(position);
+                Cost clicked = daysList.get(position);
                 Snackbar.make(view, "Long Press Recycler " + clicked.getName(), Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         }));
 
         float totalPrice = 0.0f;
-        for(CostDB day: daysList){
+        for(Cost day: daysList){
             totalPrice += day.getPrice();
         }
 
@@ -105,6 +109,10 @@ public class MainActivity extends AppCompatActivity {
         String today = dateFormat.format(date);
 
         Intent myIntent = new Intent(MainActivity.this, AddActivity.class);
+        //Intent intent = this.getPackageManager().getLaunchIntentForPackage(Config._PACKAGE);
+        //this.startActivityForResult(intent, 6699);
+
+        //myIntent.setFlags(0);
         myIntent.putExtra("date", today);
 
         MainActivity.this.startActivityForResult(myIntent, RESULT_OK );
@@ -113,6 +121,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Log.d("DEBUG", "End of Activity. Result:"+resultCode);
         switch(resultCode){
             case RESULT_OK:
                 setRecyclerView();
@@ -128,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
      * @param position selected row
      */
     private void onDayRowClick(int position){
-        CostDB clicked = daysList.get(position);
+        Cost clicked = daysList.get(position);
 
         Intent myIntent = new Intent(MainActivity.this, CostsActivity.class);
         myIntent.putExtra("date", clicked.getTimestamp());
@@ -146,18 +157,21 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        switch (item.getItemId()){
+            case(R.id.action_add):
+                createNewCost();
+                setRecyclerView();
+                break;
 
-        if (id == R.id.action_settings) {
-            return true;
-        }
+            case(R.id.action_refresh):
+                setRecyclerView();
+                break;
 
-        if (id == R.id.action_add) {
-            createNewCost();
-        }
+            case(R.id.action_settings):
+                return true;
 
-        if (id == R.id.action_refresh) {
-            setRecyclerView();
+            case( android.R.id.home):
+                finish();
         }
 
         return super.onOptionsItemSelected(item);

@@ -1,7 +1,7 @@
-package com.example.costs.model;
+package com.example.costs.database.model;
 
 
-public class CostDB {
+public class Cost {
     public static final String TABLE_NAME = "costs";
 
     public static final String COLUMN_ID = "id";
@@ -27,10 +27,10 @@ public class CostDB {
                     + COLUMN_TIMESTAMP + " DATETIME"
                     + ")";
 
-    public CostDB() {
+    public Cost() {
     }
 
-    public CostDB(int id, String name, String description, float price, String timestamp) {
+    public Cost(int id, String name, String description, float price, String timestamp) {
         this.id = id;
         this.name = name;
         this.price = price;

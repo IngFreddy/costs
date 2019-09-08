@@ -1,16 +1,18 @@
-package com.example.costs;
+package com.example.costs.view;
 
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.example.costs.model.CostDB;
-import com.example.costs.model.DatabaseHelper;
+import com.example.costs.R;
+import com.example.costs.database.CostDB;
+import com.example.costs.database.DatabaseHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +33,7 @@ public class AddActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String date = intent.getStringExtra("date");
+        setResult(50, intent);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -54,17 +57,35 @@ public class AddActivity extends AppCompatActivity {
         EditText addPriceEdt = findViewById(R.id.editTextAddPrice);
 
         String name = addNameEdt.getText().toString();
-
+        float price = 0f;
         String date = addDateEdt.getText().toString();
         String desc = addDescEdt.getText().toString();
-        float price = Float.valueOf(addPriceEdt.getText().toString());
+
+
+        try {
+            price = Float.valueOf(addPriceEdt.getText().toString());
+        }
+        catch (Exception e){
+            Snackbar.make(view, "NOT VALID PRICE: "+addPriceEdt.getText(), Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+
+            Log.d("FLOAT",e.getMessage());
+
+            return;
+        }
 
         Snackbar.make(view, "SAVED:" + name+desc+price+date, Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
 
-        DatabaseHelper db = new DatabaseHelper(this);
-        db.insertCost(name, desc, price, date);
-
+        try {
+            CostDB db = new CostDB(this);
+            db.insertCost(name, desc, price, date);
+        }
+        catch (Exception e){
+            Snackbar.make(view, "ERROR writing in database:"+e.getMessage(), Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+            return;
+        }
 
         Intent intent = getIntent();
         setResult(RESULT_OK,intent);
@@ -92,6 +113,9 @@ public class AddActivity extends AppCompatActivity {
         }
 
         if (item.getItemId() == android.R.id.home) {
+            Intent intent = getIntent();
+            setResult(RESULT_CANCELED, intent);
+
             finish();
         }
 

@@ -1,4 +1,4 @@
-package com.example.costs;
+package com.example.costs.view.adapters;
 
 
 import android.content.Context;
@@ -16,22 +16,21 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import com.example.costs.model.CostDB;
+import com.example.costs.R;
+import com.example.costs.database.model.Cost;
 
 
-public class CostsAdapter extends RecyclerView.Adapter<CostsAdapter.MyViewHolder> {
+public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.MyViewHolder> {
     private Context context;
-    private List<CostDB> costsList;
+    private List<Cost> daysList;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView note;
         public TextView dot;
         public TextView timestamp;
         public TextView price;
 
         public MyViewHolder(View view) {
             super(view);
-            note = view.findViewById(R.id.note);
             dot = view.findViewById(R.id.dot);
             timestamp = view.findViewById(R.id.timestamp);
             price = view.findViewById(R.id.price);
@@ -39,15 +38,15 @@ public class CostsAdapter extends RecyclerView.Adapter<CostsAdapter.MyViewHolder
     }
 
 
-    public CostsAdapter(Context context, List<CostDB> costsList) {
+    public DaysAdapter(Context context, List<Cost> costsList) {
         this.context = context;
-        this.costsList = costsList;
+        this.daysList = costsList;
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.costs_list_row, parent, false);
+                .inflate(R.layout.day_list_row, parent, false);
 
         return new MyViewHolder(itemView);
     }
@@ -56,18 +55,17 @@ public class CostsAdapter extends RecyclerView.Adapter<CostsAdapter.MyViewHolder
     public void onBindViewHolder(MyViewHolder holder, int position) {
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
-        CostDB note = costsList.get(position);
+        Cost note = daysList.get(position);
 
         holder.dot.setText(Html.fromHtml("&#8226;"));
 
-        holder.note.setText(note.getName());
         holder.timestamp.setText(note.getTimestamp());
         holder.price.setText(decimalFormat.format(note.getPrice()) + "€");
     }
 
     @Override
     public int getItemCount() {
-        return costsList.size();
+        return daysList.size();
     }
 
     /**
