@@ -14,11 +14,14 @@ import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 9;
     private static final String DATABASE_NAME = "costs_db";
+
+    private Context context;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
     }
 
     @Override
@@ -31,7 +34,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + Cost.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + Category.TABLE_NAME);
+
         onCreate(db);
+
+        preFillDatabase(db);
+    }
+
+    public void preFillDatabase(SQLiteDatabase db){
+        db.insert(Category.TABLE_NAME, null, insertCategory("Food", "Necessary food", 65280));
+        db.insert(Category.TABLE_NAME, null, insertCategory("Electronic", "Not so necessary", 255));
+        db.insert(Category.TABLE_NAME, null, insertCategory("Drugstore", "Cleaning stuff", 65535));
+        db.insert(Category.TABLE_NAME, null, insertCategory("Medicine", "Pills, vitamins", -256));
+        db.insert(Category.TABLE_NAME, null, insertCategory("Other", "Others, not categorized", -65281));
+    }
+
+    public ContentValues insertCategory(String name, String description, int colour) {
+        ContentValues values = new ContentValues();
+        values.put(Category.COLUMN_NAME, name);
+        values.put(Category.COLUMN_DESCRIPTION, description);
+        values.put(Category.COLUMN_COLOUR, colour);
+
+        return values;
     }
 
     public Cursor selectDB(String querry){
@@ -68,7 +91,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         //long id = db.delete(Cost.TABLE_NAME,"ID=?",new String[]{cost.getId() +""});
-        long id = db.delete(tableName, "ID=?", new String[] {Integer.toString(idDelete)});
+        long id = db.delete(tableName, "id = ?", new String[] {Integer.toString(idDelete)});
 
         db.close();
 

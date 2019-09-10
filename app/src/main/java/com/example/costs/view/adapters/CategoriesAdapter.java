@@ -2,6 +2,7 @@ package com.example.costs.view.adapters;
 
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -56,16 +57,16 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.My
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        //DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
         Category cat = catsList.get(position);
 
         holder.dot.setText(Html.fromHtml("&#8226;"));
-        holder.dot.setTextColor(Color.parseColor("#"+cat.getColour()));
+        holder.dot.setTextColor(ColorStateList.valueOf(cat.getColour()));
 
         holder.name.setText(cat.getName());
         holder.description.setText(cat.getDescription());
-        //holder.price.setText(decimalFormat.format(note.getPrice()) + "€");
+        holder.price.setText(decimalFormat.format(cat.getPrice()) + "€");
     }
 
     @Override

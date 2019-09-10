@@ -13,4 +13,6 @@
     <string name="action_categories">Categories</string>
     <string name="add_categorie">Categorie</string>
     <string name="title_activity_categories">Categories</string>
+    <string name="newCategory">New category</string>
+    <string name="editCategory">Edit category</string>
 </resources>

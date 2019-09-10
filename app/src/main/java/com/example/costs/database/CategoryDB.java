@@ -18,8 +18,11 @@ public class CategoryDB {
     public CategoryDB(Context context){
         this.db = new DatabaseHelper(context);
     }
+    public CategoryDB(DatabaseHelper db){
+        this.db = db;
+    }
 
-    public long insertCategory(String name, String description, String colour) {
+    public long insertCategory(String name, String description, int colour) {
 
         ContentValues values = new ContentValues();
         values.put(Category.COLUMN_NAME, name);
@@ -64,7 +67,39 @@ public class CategoryDB {
                         cursor.getInt(cursor.getColumnIndex(Category.COLUMN_ID)),
                         cursor.getString(cursor.getColumnIndex(Category.COLUMN_NAME)),
                         cursor.getString(cursor.getColumnIndex(Category.COLUMN_DESCRIPTION)),
-                        cursor.getString(cursor.getColumnIndex(Category.COLUMN_COLOUR)));
+                        cursor.getInt(cursor.getColumnIndex(Category.COLUMN_COLOUR)));
+
+                cats.add(cat);
+            } while (cursor.moveToNext());
+        }
+
+        sqldb.close();
+
+        return cats;
+    }
+
+    public List<Category> getAllCategoriesPrices() {
+        List<Category> cats = new ArrayList<>();
+
+        String selectQuery =
+            "SELECT cat.id, cat.name, cat.description, cat.colour, SUM(costs.price) " +
+                "FROM categories AS cat LEFT JOIN costs " +
+                "ON costs.category_id = cat.id " +
+                "GROUP BY cat.id; ";
+
+        //String selectQuery = "SELECT * FROM " + Category.TABLE_NAME +";";
+
+        SQLiteDatabase sqldb = db.getReadableDatabase();
+        Cursor cursor = sqldb.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Category cat = new Category(
+                        cursor.getInt(cursor.getColumnIndex(Category.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndex(Category.COLUMN_NAME)),
+                        cursor.getString(cursor.getColumnIndex(Category.COLUMN_DESCRIPTION)),
+                        cursor.getInt(cursor.getColumnIndex(Category.COLUMN_COLOUR)));
+                cat.setPrice(cursor.getFloat(4));
 
                 cats.add(cat);
             } while (cursor.moveToNext());

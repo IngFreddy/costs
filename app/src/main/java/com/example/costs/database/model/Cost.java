@@ -19,6 +19,8 @@ public class Cost {
     private float price;
     private int categoryID;
 
+    private int color = 0;
+
     // Create table SQL query
     public static final String CREATE_TABLE =
             "CREATE TABLE " + TABLE_NAME + "("
@@ -65,6 +67,9 @@ public class Cost {
     public int getCategoryID() {
         return categoryID;
     }
+
+    public int getColor() { return  color; }
+    public void setColor(int color) {this.color = color;}
 
     public void setChange(int id, String name, String description, float price, String timestamp, int categoryID){
         this.id = id;

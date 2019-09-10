@@ -2,6 +2,7 @@ package com.example.costs.view.adapters;
 
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,6 +61,7 @@ public class CostsAdapter extends RecyclerView.Adapter<CostsAdapter.MyViewHolder
         Cost note = costsList.get(position);
 
         holder.dot.setText(Html.fromHtml("&#8226;"));
+        holder.dot.setTextColor(ColorStateList.valueOf(note.getColor()));
 
         holder.note.setText(note.getName());
         holder.timestamp.setText(note.getTimestamp());

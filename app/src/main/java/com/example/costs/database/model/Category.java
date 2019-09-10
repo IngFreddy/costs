@@ -12,7 +12,8 @@ public class Category {
     private int id;
     private String name;
     private String description;
-    private String colour;
+    private int colour;
+    private float price = 0f;
 
     // Create table SQL query
     public static final String CREATE_TABLE =
@@ -20,13 +21,13 @@ public class Category {
                     + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                     + COLUMN_NAME + " TEXT,"
                     + COLUMN_DESCRIPTION + " TEXT,"
-                    + COLUMN_COLOUR + " TEXT"
+                    + COLUMN_COLOUR + " INTEGER"
                     + ")";
 
     public Category() {
     }
 
-    public Category(int id, String name, String description, String color) {
+    public Category(int id, String name, String description, int color) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -45,11 +46,17 @@ public class Category {
         return description;
     }
 
-    public String getColour() {
+    public int getColour() {
         return colour;
     }
 
-    public void setChange(int id, String name, String description, String colour){
+    public float getPrice() {
+        return price;
+    }
+
+    public void setPrice(float price){ this.price = price; }
+
+    public void setChange(int id, String name, String description, int colour){
         this.id = id;
         this.name = name;
         this.description = description;
