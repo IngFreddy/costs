@@ -171,7 +171,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case(R.id.action_settings):
-                return true;
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                MainActivity.this.startActivity(intent);
+                break;
 
             case( android.R.id.home):
                 finish();
