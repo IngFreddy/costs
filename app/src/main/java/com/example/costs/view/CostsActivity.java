@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.costs.R;
+import com.example.costs.database.CategoryDB;
 import com.example.costs.database.CostDB;
 import com.example.costs.database.model.Cost;
 import com.example.costs.database.DatabaseHelper;
@@ -33,7 +34,8 @@ public class CostsActivity extends AppCompatActivity {
 
     private List<Cost> costsList = new ArrayList<>();
     private RecyclerView recyclerView;
-    String date = "";
+    private String date = "";
+    private int category_id = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +47,12 @@ public class CostsActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        date = intent.getStringExtra("date");
-        String price = intent.getStringExtra("price");
+        date = intent.getStringExtra("date");               //for selecting day
+        String price = intent.getStringExtra("price");      //total price to show
+        category_id = intent.getIntExtra("category", 0);   //category ID when calling from category
 
-        setRecyclerView(date);
+        loadCostsList();
+        setRecyclerView();
 
         TextView totalPrice = findViewById(R.id.totalDayPrice);
         totalPrice.setText(date + "  " + price+"€");
@@ -61,11 +65,25 @@ public class CostsActivity extends AppCompatActivity {
 
     }
 
-    private void setRecyclerView(String date){
-        recyclerView = findViewById(R.id.recyclerViewCosts);
+    private void loadCostsList(){
+        try {
+            if (this.category_id == 0) {        //no category selected
+                CostDB db = new CostDB(this);
+                costsList = db.getCostsForDate(date);
+            } else {                            //selected category
+                CategoryDB db = new CategoryDB(this);
+                costsList = db.getAllCostsForCategory(category_id);
+            }
+        }
+        catch (Exception e){
+            Snackbar.make(this.getCurrentFocus(), "Error reading costs list: "+ e.getMessage(), Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+            costsList = new ArrayList<>();
+        }
+    }
 
-        CostDB db = new CostDB(this);
-        costsList = db.getCostsForDate(date);
+    private void setRecyclerView(){
+        recyclerView = findViewById(R.id.recyclerViewCosts);
 
         CostsAdapter mAdapter = new CostsAdapter(this, costsList);
 
@@ -98,6 +116,7 @@ public class CostsActivity extends AppCompatActivity {
      */
     private void showActionsDialog(final int position) {
         CharSequence options[] = new CharSequence[]{"Edit", "Delete"};
+        final Cost cost = costsList.get(position);
 
         final Context context = this;
 
@@ -107,7 +126,12 @@ public class CostsActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (which == 0) {   //EDIT
-                    Log.d("DEBUG", "Choosed edit "+position);
+                    Intent myIntent = new Intent(CostsActivity.this, AddActivity.class);
+                    myIntent.putExtra("date", date);
+                    myIntent.putExtra("update", 1);
+                    myIntent.putExtra("id", cost.getId());
+
+                    CostsActivity.this.startActivityForResult(myIntent, 1 );
                 }
 
                 else {              //DELETE
@@ -116,9 +140,10 @@ public class CostsActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             if (which == DialogInterface.BUTTON_POSITIVE) {
                                 CostDB db = new CostDB(context);
-                                db.deleteCost(costsList.get(position).getId());
+                                db.deleteCost(cost.getId());
 
-                                setRecyclerView(date);
+                                loadCostsList();
+                                setRecyclerView();
                             }
                         }
                     };
@@ -136,18 +161,18 @@ public class CostsActivity extends AppCompatActivity {
         Intent myIntent = new Intent(CostsActivity.this, AddActivity.class);
         myIntent.putExtra("date", date);
 
-        CostsActivity.this.startActivityForResult(myIntent, RESULT_OK );
+        CostsActivity.this.startActivityForResult(myIntent, 1 );
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d("DEBUG", "End of Activity. Result:"+resultCode);
         switch(resultCode){
-            case RESULT_OK:
-                setRecyclerView(date);
+            case 1:
+                loadCostsList();
+                setRecyclerView();
                 break;
             case RESULT_CANCELED:
-                System.out.println("ERROR creating Cost");
                 break;
         }
     }
@@ -164,11 +189,16 @@ public class CostsActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case(R.id.action_add):
                 createNewCost();
-                setRecyclerView(date);
                 break;
 
             case(R.id.action_refresh):
-                setRecyclerView(date);
+                loadCostsList();
+                setRecyclerView();
+                break;
+
+            case(R.id.action_categories):
+                Intent myIntent = new Intent(CostsActivity.this, CategoriesActivity.class);
+                CostsActivity.this.startActivity(myIntent);
                 break;
 
             case(R.id.action_settings):

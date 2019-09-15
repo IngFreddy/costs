@@ -11,7 +11,7 @@
     <string name="action_refresh">Refresh</string>
     <string name="action_filter">Filter</string>
     <string name="action_categories">Categories</string>
-    <string name="add_categorie">Categorie</string>
+    <string name="add_category">Category</string>
     <string name="title_activity_categories">Categories</string>
     <string name="newCategory">New category</string>
     <string name="editCategory">Edit category</string>

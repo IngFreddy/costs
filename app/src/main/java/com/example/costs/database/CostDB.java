@@ -44,6 +44,22 @@ public class CostDB {
 
     }
 
+    public long updateCost(int id, String name, String description, float price, String date, int categoryID) {
+
+        ContentValues values = new ContentValues();
+        values.put(Cost.COLUMN_NAME, name);
+        values.put(Cost.COLUMN_DESCRIPTION, description);
+        values.put(Cost.COLUMN_PRICE, price);
+        values.put(Cost.COLUMN_TIMESTAMP, date);
+        values.put(Cost.COLUMN_CATEGORYID, categoryID);
+
+        //return mDb.update(TABLENAME, contentValues,"ID=?",new String[] {id});
+        //long id = db.update(Cost.TABLE_NAME, values, "ID=?", new String[] {cost.getId() +""});
+
+        return db.updateDB(Cost.TABLE_NAME, id, values);
+
+    }
+
     public long updateCost(Cost cost) {
 
         ContentValues values = new ContentValues();
@@ -68,6 +84,53 @@ public class CostDB {
         return db.deleteDB(Cost.TABLE_NAME, id);
     }
 
+    public Cost selectCost(int id) throws NoSuchFieldException {
+        String selectQuery = "SELECT * FROM " + Cost.TABLE_NAME + " WHERE id = " + id + ";";
+
+        SQLiteDatabase sqldb = db.getReadableDatabase();
+        Cursor cursor = sqldb.rawQuery(selectQuery, null);
+
+        Cost cost;
+        if (cursor.moveToFirst()) {
+            cost = new Cost(id,
+                cursor.getString(cursor.getColumnIndex(Cost.COLUMN_NAME)),
+                cursor.getString(cursor.getColumnIndex(Cost.COLUMN_DESCRIPTION)),
+                cursor.getFloat(cursor.getColumnIndex(Cost.COLUMN_PRICE)),
+                cursor.getString(cursor.getColumnIndex(Cost.COLUMN_TIMESTAMP)),
+                cursor.getInt(cursor.getColumnIndex(Cost.COLUMN_CATEGORYID)));
+        }
+        else{
+            throw new NoSuchFieldException("Cost ID not found in database");
+        }
+
+        sqldb.close();
+
+        return cost;
+    }
+
+    public Cost selectCostForCategoryID(int id) throws NoSuchFieldException {
+        String selectQuery = "SELECT * FROM " + Cost.TABLE_NAME + " WHERE "+ Cost.COLUMN_CATEGORYID+" = " + id + ";";
+
+        SQLiteDatabase sqldb = db.getReadableDatabase();
+        Cursor cursor = sqldb.rawQuery(selectQuery, null);
+
+        Cost cost;
+        if (cursor.moveToFirst()) {
+            cost = new Cost(cursor.getInt(cursor.getColumnIndex(Cost.COLUMN_ID)),
+                    cursor.getString(cursor.getColumnIndex(Cost.COLUMN_NAME)),
+                    cursor.getString(cursor.getColumnIndex(Cost.COLUMN_DESCRIPTION)),
+                    cursor.getFloat(cursor.getColumnIndex(Cost.COLUMN_PRICE)),
+                    cursor.getString(cursor.getColumnIndex(Cost.COLUMN_TIMESTAMP)),
+                    cursor.getInt(cursor.getColumnIndex(Cost.COLUMN_CATEGORYID)));
+        }
+        else{
+            throw new NoSuchFieldException("Cost ID not found in database");
+        }
+
+        sqldb.close();
+
+        return cost;
+    }
 
     public List<Cost> getAllDates() {
         List<Cost> costs = new ArrayList<>();
@@ -104,7 +167,8 @@ public class CostDB {
 
         String selectQuery = "SELECT c.id, c.name, c.description, c.price, c.timestamp, c.category_id, categories.colour \n" +
                 "\tFROM costs AS c LEFT JOIN categories ON c.category_id = categories.id \n" +
-                "\tORDER BY c.timestamp ASC;";
+                " WHERE " + Cost.COLUMN_TIMESTAMP + "=\"" + date +
+                "\" ORDER BY c.timestamp ASC;";
 
         SQLiteDatabase sqldb = db.getReadableDatabase();
         Cursor cursor = sqldb.rawQuery(selectQuery, null);

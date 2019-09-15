@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -53,14 +52,12 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.MyViewHolder> 
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        DecimalFormat decimalFormat = new DecimalFormat("#.##");
-
         Cost note = daysList.get(position);
 
         holder.dot.setText(Html.fromHtml("&#8226;"));
 
         holder.timestamp.setText(note.getTimestamp());
-        holder.price.setText(decimalFormat.format(note.getPrice()) + "€");
+        holder.price.setText(note.getPrice(true) + "€");
     }
 
     @Override

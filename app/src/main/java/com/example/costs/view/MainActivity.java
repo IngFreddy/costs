@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 
 import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -31,6 +30,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.example.costs.utils.*;
 import com.example.costs.database.model.Cost;
@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private List<Cost> daysList = new ArrayList<>();
-    private DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,11 +63,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {createNewCost();}
         });
-
-//        CategoryDB db = new CategoryDB(this);
-//        db.insertCategory("test1", "test1", "00ffff");
-//        db.insertCategory("test2", "test2", "ff00ff");
-//        db.insertCategory("test3", "test3", "ffff00");
     }
 
     /**
@@ -108,6 +102,9 @@ public class MainActivity extends AppCompatActivity {
             totalPrice += day.getPrice();
         }
 
+        TextView totalP = findViewById(R.id.totalPrice);
+        totalP.setText("Total price: "+ totalPrice + "€");
+
     }
 
     private void createNewCost(){
@@ -116,14 +113,8 @@ public class MainActivity extends AppCompatActivity {
         String today = dateFormat.format(date);
 
         Intent myIntent = new Intent(MainActivity.this, AddActivity.class);
-        //Intent intent = this.getPackageManager().getLaunchIntentForPackage(Config._PACKAGE);
-        //this.startActivityForResult(intent, 6699);
-
-        //myIntent.setFlags(0);
         myIntent.putExtra("date", today);
-
-        MainActivity.this.startActivityForResult(myIntent, RESULT_OK );
-
+        MainActivity.this.startActivityForResult(myIntent, 1 );
     }
 
     @Override
@@ -132,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d("DEBUG", "End of Activity. Result:"+resultCode);
         switch(resultCode){
-            case RESULT_OK:
+            case 1:
                 setRecyclerView();
                 break;
             case RESULT_CANCELED:
@@ -150,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent myIntent = new Intent(MainActivity.this, CostsActivity.class);
         myIntent.putExtra("date", clicked.getTimestamp());
-        myIntent.putExtra("price", decimalFormat.format(clicked.getPrice()));
+        myIntent.putExtra("price", clicked.getPrice(true));
 
         MainActivity.this.startActivity(myIntent);
     }

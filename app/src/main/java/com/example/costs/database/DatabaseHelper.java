@@ -18,6 +18,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "costs_db";
 
     private Context context;
+    private SQLiteDatabase _db;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -28,6 +29,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(Cost.CREATE_TABLE);
         db.execSQL(Category.CREATE_TABLE);
+
+        preFillDatabase(db);
     }
 
     @Override
@@ -37,14 +40,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         onCreate(db);
 
-        preFillDatabase(db);
     }
 
     public void preFillDatabase(SQLiteDatabase db){
         db.insert(Category.TABLE_NAME, null, insertCategory("Food", "Necessary food", 65280));
         db.insert(Category.TABLE_NAME, null, insertCategory("Electronic", "Not so necessary", 255));
         db.insert(Category.TABLE_NAME, null, insertCategory("Drugstore", "Cleaning stuff", 65535));
-        db.insert(Category.TABLE_NAME, null, insertCategory("Medicine", "Pills, vitamins", -256));
+        db.insert(Category.TABLE_NAME, null, insertCategory("Medicine", "Pills, vitamins", -43230));
         db.insert(Category.TABLE_NAME, null, insertCategory("Other", "Others, not categorized", -65281));
     }
 
@@ -58,10 +60,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Cursor selectDB(String querry){
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(querry, null);
-
-        db.close();
+        this._db = this.getReadableDatabase();
+        Cursor cursor = _db.rawQuery(querry, null);
 
         return cursor;
     }
@@ -98,4 +98,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return id;
     }
 
+
+    public void closeDB(){
+        this._db.close();
+    }
 }

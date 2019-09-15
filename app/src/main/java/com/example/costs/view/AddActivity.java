@@ -26,7 +26,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,8 +94,6 @@ public class AddActivity extends AppCompatActivity {
         final EditText addPriceEdt = findViewById(R.id.editTextAddPrice);
         final Spinner addCategSpin = findViewById(R.id.spinnerChooseCategorie);
 
-        DecimalFormat decimalFormat = new DecimalFormat("#.##");
-
         Cost cost;
         try {
             CostDB db = new CostDB(this);
@@ -104,7 +101,7 @@ public class AddActivity extends AppCompatActivity {
 
             addNameEdt.setText(cost.getName());
             addDescEdt.setText(cost.getDescription());
-            addPriceEdt.setText(decimalFormat.format(cost.getPrice()));
+            addPriceEdt.setText(cost.getPrice(true));
             int i=0;
             for(; i<categories.size(); i++){
                 if(categories.get(i).getId() == cost.getCategoryID())  break;

@@ -11,10 +11,6 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import com.example.costs.R;
@@ -56,7 +52,6 @@ public class CostsAdapter extends RecyclerView.Adapter<CostsAdapter.MyViewHolder
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
         Cost note = costsList.get(position);
 
@@ -65,7 +60,7 @@ public class CostsAdapter extends RecyclerView.Adapter<CostsAdapter.MyViewHolder
 
         holder.note.setText(note.getName());
         holder.timestamp.setText(note.getTimestamp());
-        holder.price.setText(decimalFormat.format(note.getPrice()) + "€");
+        holder.price.setText(note.getPrice(true) + "€");
     }
 
     @Override

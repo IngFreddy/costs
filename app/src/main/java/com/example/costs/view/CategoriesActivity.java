@@ -2,6 +2,7 @@ package com.example.costs.view;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.costs.R;
@@ -80,6 +81,12 @@ public class CategoriesActivity extends AppCompatActivity {
             @Override
             public void onClick(View view, final int position) {
                 Category cat = catsList.get(position);
+                Intent myIntent = new Intent(CategoriesActivity.this, CostsActivity.class);
+                myIntent.putExtra("date", cat.getName());
+                myIntent.putExtra("price", cat.getPrice(true));
+                myIntent.putExtra("category", cat.getId());
+                CategoriesActivity.this.startActivityForResult(myIntent, 1 );
+
                 Snackbar.make(view, cat.getDescription(), Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
@@ -138,7 +145,7 @@ public class CategoriesActivity extends AppCompatActivity {
 
         final EditText catName = view.findViewById(R.id.categoryName);
         final EditText catDescription = view.findViewById(R.id.categoryDescription);
-        final ColorSlider colorSlider = findViewById(R.id.color_slider);
+        final ColorSlider colorSlider = view.findViewById(R.id.color_slider);
 
         if (update && cat != null) {
             catName.setText(cat.getName());

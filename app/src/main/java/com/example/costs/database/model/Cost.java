@@ -1,6 +1,8 @@
 package com.example.costs.database.model;
 
 
+import java.text.DecimalFormat;
+
 public class Cost {
     public static final String TABLE_NAME = "costs";
 
@@ -54,6 +56,11 @@ public class Cost {
 
     public float getPrice() {
         return price;
+    }
+
+    public String getPrice(boolean xy) {
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        return decimalFormat.format(price);
     }
 
     public String getDescription() {

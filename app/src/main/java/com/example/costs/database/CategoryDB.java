@@ -22,6 +22,28 @@ public class CategoryDB {
         this.db = db;
     }
 
+    public Category selectCategory(int id){
+        String selectQuery = "SELECT * FROM " + Category.TABLE_NAME +
+                " WHERE id = "+id+" ;";
+
+        SQLiteDatabase sqldb = db.getReadableDatabase();
+        Cursor cursor = sqldb.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            Category cat = new Category(
+                    cursor.getInt(cursor.getColumnIndex(Category.COLUMN_ID)),
+                    cursor.getString(cursor.getColumnIndex(Category.COLUMN_NAME)),
+                    cursor.getString(cursor.getColumnIndex(Category.COLUMN_DESCRIPTION)),
+                    cursor.getInt(cursor.getColumnIndex(Category.COLUMN_COLOUR)));
+
+            return cat;
+        }
+
+        sqldb.close();
+
+        return null;
+    }
+
     public long insertCategory(String name, String description, int colour) {
 
         ContentValues values = new ContentValues();
@@ -40,7 +62,7 @@ public class CategoryDB {
         values.put(Category.COLUMN_DESCRIPTION, category.getDescription());
         values.put(Category.COLUMN_COLOUR, category.getColour());
 
-        return db.updateDB(Cost.TABLE_NAME, category.getId(), values);
+        return db.updateDB(Category.TABLE_NAME, category.getId(), values);
 
     }
 
@@ -87,8 +109,6 @@ public class CategoryDB {
                 "ON costs.category_id = cat.id " +
                 "GROUP BY cat.id; ";
 
-        //String selectQuery = "SELECT * FROM " + Category.TABLE_NAME +";";
-
         SQLiteDatabase sqldb = db.getReadableDatabase();
         Cursor cursor = sqldb.rawQuery(selectQuery, null);
 
@@ -108,6 +128,38 @@ public class CategoryDB {
         sqldb.close();
 
         return cats;
+    }
+
+    public List<Cost> getAllCostsForCategory(int category_id) {
+        List<Cost> costs = new ArrayList<>();
+        Category cat = selectCategory(category_id);
+
+        String selectQuery =
+                "SELECT * FROM "+ Cost.TABLE_NAME +
+                        " WHERE category_id = " + category_id +
+                        " ;";
+
+        SQLiteDatabase sqldb = db.getReadableDatabase();
+        Cursor cursor = sqldb.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Cost cot = new Cost(
+                        cursor.getInt(cursor.getColumnIndex(Cost.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndex(Cost.COLUMN_NAME)),
+                        cursor.getString(cursor.getColumnIndex(Cost.COLUMN_DESCRIPTION)),
+                        cursor.getFloat(cursor.getColumnIndex(Cost.COLUMN_PRICE)),
+                        cursor.getString(cursor.getColumnIndex(Cost.COLUMN_TIMESTAMP)),
+                        category_id);
+                cot.setColor(cat.getColour());
+
+                costs.add(cot);
+            } while (cursor.moveToNext());
+        }
+
+        sqldb.close();
+
+        return costs;
     }
 
 }
